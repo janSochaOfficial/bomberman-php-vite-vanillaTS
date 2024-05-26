@@ -19,10 +19,10 @@ export class DrawHelper {
       this.prepareBoard();
     };
     this.img.src = spritesheet;
-    this.canvasSize = positionHelper.calcCanvasPostion({
+    this.canvasSize = positionHelper.calcCanvasScale(positionHelper.calcPostionInTiles({
       x: ConstsHelper.game_data!.canvasWidth,
       y: ConstsHelper.game_data!.canvasHeight,
-    });
+    }));
     this.ctx.fillStyle = ConstsHelper.game_data!.backgroundColor;
   }
 
@@ -49,8 +49,10 @@ export class DrawHelper {
       return;
     }
     if (positionInTiles) {
-      pos = positionHelper.calcCanvasPostion(pos);
+      pos = positionHelper.calcPostionInTiles(pos);
     }
+
+    pos = positionHelper.calcCanvasScale(pos);
 
     this.drawAsset({
       sheetPostion: sprites[sprite],

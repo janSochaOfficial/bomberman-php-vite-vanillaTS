@@ -10,11 +10,15 @@ $clients = array($server); // tablica klientów
 $write  = NULL;
 $except = NULL;
 
-echo "server ready!\n";
+require_once("./WebSocketController.php");
+
+echo "server ready running on tcp://$host:$port\n";
+
+$controller = new WebSocketController();
 
 while (true) {
     $changed = $clients;
-    stream_select($changed, $write, $except, 4); // 4s - TICKI!!!!!
+    stream_select($changed, $write, $except, 0, 500); // 4s - TICKI!!!!!
  
 	if (in_array($server, $changed)) {
         $client = @stream_socket_accept($server);
@@ -30,16 +34,16 @@ while (true) {
         handshake($client, $headers, $host, $port);
         stream_set_blocking($client, false);
 
-        $data=["msg" => "Nastąpiło połączenie"];
+        $response_data = $controller->user_connect($ip);
 
-        send_message($client, mask(json_encode($data))); //połączenie -> aktualne dane
+        send_message($client, mask(json_encode($response_data))); //połączenie -> aktualne dane
 
         $found_socket = array_search($server, $changed);
         unset($changed[$found_socket]);
     }
 
     foreach ($changed as $changed_socket) {   // wiadomość od klienta
-        print_r($changed_socket);
+        // print_r($changed_socket);
       
         $ip = stream_socket_get_name($changed_socket, true);
         $buffer = stream_get_contents($changed_socket);
@@ -49,18 +53,29 @@ while (true) {
             @fclose($changed_socket);
             $found_socket = array_search($changed_socket, $clients);
             unset($clients[$found_socket]);
+            $controller->user_disconnect($ip);
+            continue;
         }
-      
+
         $unmasked = unmask($buffer);
-        if ($unmasked != "") {
-            echo "\nReceived a Message from $ip:\n\"$unmasked\" \n";
+        if ($unmasked == "" || $unmasked == "\"\"") {
+           continue; 
+        }
+
+        echo "\nReceived a Message from $ip:\n\"$unmasked\" \n";
+        try {
+            $userMessage = json_decode($unmasked, true);
+            $response = $controller->user_message($ip, $userMessage);
+            send_message($changed_socket, mask(json_encode($response)));
+        }
+        catch (Error){
+            echo "u fucked: \n";
         }
       
-        $response = mask($unmasked);
-        send_message($changed_socket, $response);
     }
 
-    brodcast_message($clients, mask(json_encode(["msg"=>"tick"])));
+    $tick_data = $controller->tick();
+    brodcast_message($clients, mask(json_encode($tick_data)));
 }
 fclose($server);
 

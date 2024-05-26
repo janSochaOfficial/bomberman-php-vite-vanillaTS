@@ -3,17 +3,17 @@ import { ConstsHelper } from "./consts-helper";
 
 
 export class positionHelper {
-  static calcShetPostion(pos: position): position {
+  static calcPostionInTiles(pos: position): position {
     return {
       x: pos.x * ConstsHelper.game_data!.tileSize,
       y: pos.y * ConstsHelper.game_data!.tileSize,
     };
   }
 
-  static calcCanvasPostion(pos: position): position {
+  static calcCanvasScale(pos: position): position {
     return {
-      x: pos.x * ConstsHelper.game_data!.tileSize * ConstsHelper.game_data!.canvasScale,
-      y: pos.y * ConstsHelper.game_data!.tileSize * ConstsHelper.game_data!.canvasScale,
-    };
+      x: pos.x * ConstsHelper.game_data!.canvasScale,
+      y: pos.y * ConstsHelper.game_data!.canvasScale
+    }
   }
 }

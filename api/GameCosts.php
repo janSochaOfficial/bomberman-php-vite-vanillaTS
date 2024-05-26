@@ -1,14 +1,23 @@
 <?php
 
 class GameConsts {
-    static array $data = array(
-        "tileSize" => 16,
+    public static array $data = array(
+        "tileSize" =>  16,
         "canvasWidth" => 31,
         "canvasHeight" => 13,
         "canvasScale" => 2,
         "backgroundColor" => "#388700",
         "wallsToDraw" => 40
     );
+
+    public static array $player_base_object = [
+        "socket_ip" => -1,
+        "position" => [
+            "x" => 1 * 16,
+            "y" => 1 * 16
+        ],
+        "bomb_strength" => 1
+    ];
 
 
     static function getConst(string $const) {
