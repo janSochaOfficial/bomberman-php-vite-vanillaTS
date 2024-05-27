@@ -12,7 +12,12 @@ class WebSocketController {
 
   public function user_connect(string $ip): array {
     $this->game->addPlayer($ip);
-    $data = ["msg" => "Nastąpiło połączenie"];
+    $data = [
+      "action" => "board",
+      "data" => [
+        "board" => $this->game->board
+      ]
+    ];
     return $data;
   }
 
@@ -24,8 +29,7 @@ class WebSocketController {
     $this->game->tick();
     return [
       "action" => "tick",
-      "data" => [
-        "board" => $this->game->board,
+      "data" => [,
         "players" => $this->game->players, 
       ]
     ];

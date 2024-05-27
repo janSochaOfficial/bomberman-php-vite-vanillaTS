@@ -18,7 +18,7 @@ $controller = new WebSocketController();
 
 while (true) {
     $changed = $clients;
-    stream_select($changed, $write, $except, 0, 500); // 4s - TICKI!!!!!
+    stream_select($changed, $write, $except, 1, 50000); // 4s - TICKI!!!!!
  
 	if (in_array($server, $changed)) {
         $client = @stream_socket_accept($server);

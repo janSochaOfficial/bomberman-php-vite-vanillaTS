@@ -1,10 +1,9 @@
-import { DrawHelper, positionHelper } from "..";
-import { sprite_names, sprites } from "../../data";
-import { IDrawable } from "../../interfaces/i-drawable";
+import { DrawHelper } from "..";
+import { sprite_names } from "../../data";
+import { IDrawable } from "../../interfaces";
 import { position } from "../../types";
 
 export class WallObject implements IDrawable {
-  private static readonly sprite = sprites[sprite_names.wall_br];
   private readonly position: position;
   private readonly powerup?: string;
 
@@ -20,7 +19,7 @@ export class WallObject implements IDrawable {
       this.powerup = powerUp;
     }
   }
-  async draw(drawer: DrawHelper, tick: number): Promise<void> {
+  async draw(drawer: DrawHelper, delta: number): Promise<void> {
     if (this.breakable) {
       drawer.drawSprite(sprite_names.wall_br, this.position);
     } else {
