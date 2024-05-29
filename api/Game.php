@@ -30,8 +30,13 @@ class Game
 
     public function tick() {
         foreach ($this->players as $index => $associativeArray){
-            $this->players[$index]['position']['x'] = $associativeArray['position']['x']+2;
+            // $this->players[$index]['position']['x'] = $associativeArray['position']['x']+2;
         }
+    }
+
+    public function updatePlayerPosition(string $playerIp, array $position) {
+        $index = $this->findPlayerIndex($playerIp);
+        $this->players[$index]['position'] = $position;
     }
 
     private function findPlayerIndex(string $playerIp)

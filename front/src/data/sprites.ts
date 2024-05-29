@@ -5,7 +5,10 @@ export enum sprite_names {
   plain,
   wall,
   wall_br,
-  player_base,
+  player_down,
+  player_up,
+  player_right,
+  player_left,
 }
 
 export enum sprite_anim {
@@ -27,7 +30,10 @@ export const sprites: sprites_type = {
   [sprite_names.wall]: { x: 3, y: 3 },
   [sprite_names.wall_br]: { x: 4, y: 3 },
   [sprite_names.plain]: { x: 0, y: 4 },
-  [sprite_names.player_base]: { x: 4, y: 0 },
+  [sprite_names.player_down]: { x: 4, y: 0 },
+  [sprite_names.player_up]: { x: 4, y: 1 },
+  [sprite_names.player_left]: { x: 2, y: 0 },
+  [sprite_names.player_right]: { x: 2, y: 1 },
 };
 
 export const animations: sprite_anim_type = {

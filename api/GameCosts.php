@@ -13,10 +13,12 @@ class GameConsts {
     public static array $player_base_object = [
         "socket_ip" => -1,
         "position" => [
-            "x" => 1 * 16,
-            "y" => 1 * 16
+            "x" => 1,
+            "y" => 1
         ],
-        "bomb_strength" => 1
+        "bomb_strength" => 1,
+        "state" => "walking",
+        "facing" => "right"
     ];
 
 

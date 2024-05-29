@@ -18,7 +18,7 @@ $controller = new WebSocketController();
 
 while (true) {
     $changed = $clients;
-    stream_select($changed, $write, $except, 1, 50000); // 4s - TICKI!!!!!
+    stream_select($changed, $write, $except, 1); // 4s - TICKI!!!!!
  
 	if (in_array($server, $changed)) {
         $client = @stream_socket_accept($server);
@@ -66,7 +66,7 @@ while (true) {
         try {
             $userMessage = json_decode($unmasked, true);
             $response = $controller->user_message($ip, $userMessage);
-            send_message($changed_socket, mask(json_encode($response)));
+            if ($response) send_message($changed_socket, mask(json_encode($response)));
         }
         catch (Error){
             echo "u fucked: \n";

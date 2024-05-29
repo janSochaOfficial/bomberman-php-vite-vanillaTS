@@ -1,9 +1,10 @@
 import { wsConnetion } from "../../data/connetion";
+import { server_message } from "../../types/server_message";
 
 export class WebsocketService {
   public readonly socket: WebSocket;
-  private readonly logicOnMessage: (data: unknown) => void
-  constructor(onMessage: (data: unknown) => void) {
+  private readonly logicOnMessage: (data: server_message) => void
+  constructor(onMessage: (data: server_message) => void) {
     this.logicOnMessage = onMessage;
     this.socket = new WebSocket(`ws://${wsConnetion.url}:${wsConnetion.port}`);
     this.initSocket();
@@ -18,15 +19,18 @@ export class WebsocketService {
   private onMessage = (event: MessageEvent) => {
     if (event.data != "")
       try {
-        const data = JSON.parse(event.data); //PHP sends Json data
-        this.logicOnMessage(data);
+        const data = JSON.parse(event.data); 
+        if (data?.action && data?.data)
+          this.logicOnMessage(data);
+        else
+          console.error("Invalid data: ", data);
       } catch (error) {
         console.error(error);
         //console.log(ev.data);
       }
   }
 
-  public sendMessage(data: unknown): void {
+  public sendMessage(data: server_message): void {
     this.socket.send(JSON.stringify(data));
   }
 }

@@ -1,7 +1,7 @@
 import { gameSprite, position } from "../../types";
 import spritesheet from "../../assets/Spritesheet.png";
 import { positionHelper } from "..";
-import { sprite_names, sprites } from "../../data";
+import { animations, sprite_anim, sprite_names, sprites } from "../../data";
 import { ConstsHelper } from "./consts-helper";
 
 export class DrawHelper {
@@ -19,10 +19,12 @@ export class DrawHelper {
       this.prepareBoard();
     };
     this.img.src = spritesheet;
-    this.canvasSize = positionHelper.calcCanvasScale(positionHelper.calcPostionInTiles({
-      x: ConstsHelper.game_data!.canvasWidth,
-      y: ConstsHelper.game_data!.canvasHeight,
-    }));
+    this.canvasSize = positionHelper.calcCanvasScale(
+      positionHelper.calcPostionInTiles({
+        x: ConstsHelper.game_data!.canvasWidth,
+        y: ConstsHelper.game_data!.canvasHeight,
+      })
+    );
     this.ctx.fillStyle = ConstsHelper.game_data!.backgroundColor;
   }
 
@@ -58,6 +60,33 @@ export class DrawHelper {
       sheetPostion: sprites[sprite],
       canvasPosition: pos,
     });
+  }
+
+  drawAnimFrame(
+    anim: sprite_anim,
+    pos: position,
+    positionInTiles: boolean,
+    currentTime: number,
+    duration: number
+  ) {
+    const currentFrame = Math.floor(
+      (animations[anim].length * (currentTime % duration)) / duration
+    );
+    if (!this.imageReady) {
+      return;
+    }
+    if (positionInTiles) {
+      pos = positionHelper.calcPostionInTiles(pos);
+    }
+
+    pos = positionHelper.calcCanvasScale(pos);
+
+    this.drawAsset({
+      sheetPostion: animations[anim][currentFrame],
+      canvasPosition: pos,
+    });
+
+    // console.log(currentFrame);
   }
 
   prepareBoard() {

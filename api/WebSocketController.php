@@ -2,40 +2,52 @@
 
 require_once("./Game.php");
 
-class WebSocketController {
+class WebSocketController
+{
 
   public Game $game;
 
-  public function __construct(){
+  public function __construct()
+  {
     $this->game = new Game();
   }
 
-  public function user_connect(string $ip): array {
+  public function user_connect(string $ip): array
+  {
     $this->game->addPlayer($ip);
     $data = [
-      "action" => "board",
+      "action" => "connect",
       "data" => [
-        "board" => $this->game->board
+        "board" => $this->game->board,
+        "ip" => $ip
       ]
     ];
     return $data;
   }
 
-  public function user_message(string $ip, array $message): array{
-    return $message;
+  public function user_message(string $ip, array $message): array | false
+  {
+    switch ($message['action']) {
+      case "position":
+        $this->game->updatePlayerPosition($ip, $message['data']['position']);
+    }
+
+    return false;
   }
 
-  public function tick(): array {
+  public function tick(): array
+  {
     $this->game->tick();
     return [
       "action" => "tick",
-      "data" => [,
-        "players" => $this->game->players, 
+      "data" => [
+        "players" => $this->game->players,
       ]
     ];
   }
-  
-  public function user_disconnect(string $ip): void {
+
+  public function user_disconnect(string $ip): void
+  {
     $this->game->deletePLayer($ip);
   }
 }

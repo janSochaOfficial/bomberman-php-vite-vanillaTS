@@ -1,3 +1,7 @@
+import { findPlayerIndex } from "../../functions";
+import { player_data_type } from "../../types";
+import { LocalPlayerObject } from "../objects";
+import { PlayerObject } from "../objects/player-object";
 import { WallObject } from "../objects/wall-object";
 import { ConstsHelper } from "./consts-helper";
 
@@ -17,5 +21,23 @@ export class RequestConvertHelper {
       }
     }
     return walls;
+  }
+
+  public static Players(players: player_data_type[], ip: string) {
+    let localPlayer;
+    const playersMapped = players.map(
+      (player_data: player_data_type, index) => {
+        if (player_data.socket_ip === ip) {
+          localPlayer = new LocalPlayerObject(player_data);
+          return localPlayer;
+        }
+        return new PlayerObject(player_data);
+      }
+    );
+
+    return {
+      players: playersMapped,
+      localPlayer,
+    };
   }
 }
