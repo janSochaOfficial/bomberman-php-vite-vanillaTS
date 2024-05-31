@@ -93,5 +93,6 @@ export class GameService {
     }
     const index = findPlayerIndex(this.players, this.ip);
     this.players[index] = this.localPlayer;
+    this.localPlayer.walls = this.walls;
   }
 }

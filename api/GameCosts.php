@@ -21,11 +21,18 @@ class GameConsts {
         "facing" => "right"
     ];
 
+    public static array $collision = [
+        "distance_min" => 1,
+        "snap_max_distance" => 0.2,
+        "snap_shift" => 0.1
+    ];
 
     static function getConst(string $const) {
         switch($const) {
             case "data":
                 return self::$data;
+            case "collision":
+                return self::$collision;
             default:
                 header("HTTP/1.1 404 Not Found");
                 return ["result" => "Not Found"];

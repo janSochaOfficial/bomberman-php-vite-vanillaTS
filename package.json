@@ -1,0 +1,26 @@
+{
+  "name": "bomberman-php-vite-vanilla-ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "front": "cd front && npm start",
+    "back": "cd api && \"C:\\xampp\\php\\php.exe\" -f \".\\server.php\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janSochaOfficial/bomberman-php-vite-vanillaTS.git"
+  },
+  "keywords": [
+    "php",
+    "typescript",
+    "bomberman"
+  ],
+  "author": "Jan Socha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/janSochaOfficial/bomberman-php-vite-vanillaTS/issues"
+  },
+  "homepage": "https://github.com/janSochaOfficial/bomberman-php-vite-vanillaTS#readme"
+}

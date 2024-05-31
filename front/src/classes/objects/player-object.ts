@@ -36,17 +36,17 @@ export class PlayerObject implements IDrawable {
   }
 
   async draw(drawer: DrawHelper, delta: number): Promise<void> {
-    if (this.state == "standing") {
-      drawer.drawSprite(facing_sprite[this.facing], this.position);
-    } else {
-      this.currentTimer += delta;
-      drawer.drawAnimFrame(
-        facing_anim[this.facing],
-        this.position,
-        true,
-        this.currentTimer,
-        1
-      );
-    }
+    // if (this.state == "standing") {
+    //   drawer.drawSprite(facing_sprite[this.facing], this.position);
+    // } else {
+    if (this.state == "walking") this.currentTimer += delta;
+    drawer.drawAnimFrame(
+      facing_anim[this.facing],
+      this.position,
+      true,
+      this.currentTimer,
+      0.8
+    );
+    // }
   }
 }

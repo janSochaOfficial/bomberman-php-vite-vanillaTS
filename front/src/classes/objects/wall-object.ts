@@ -4,7 +4,7 @@ import { IDrawable } from "../../interfaces";
 import { position } from "../../types";
 
 export class WallObject implements IDrawable {
-  private readonly position: position;
+  public readonly position: position;
   private readonly powerup?: string;
 
   public breakable: boolean;
