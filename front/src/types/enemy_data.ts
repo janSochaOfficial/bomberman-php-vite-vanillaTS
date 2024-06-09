@@ -4,4 +4,5 @@ import { position } from "./position";
 export type enemy_data = {
   type: enemy_type;
   position: position;
+  path: position[];
 }

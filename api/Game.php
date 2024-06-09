@@ -41,13 +41,15 @@ class Game
             }
             $travelDistance = $delta * $speed;
             $newPos = $enemy["position"];
-            $pathStep = 1;
+            $pathStep = 0;
             while ($travelDistance > 0) {
-                if (!isset($enemy['path'][$pathStep])) break;
+                if (!isset($enemy['path'][$pathStep]))
+                    break;
                 $distance = Vectors::distance($newPos, $enemy['path'][$pathStep]);
                 if ($travelDistance > $distance) {
                     $travelDistance -= $distance;
                     $newPos = $enemy['path'][$pathStep];
+                    $pathStep++;
                 } else {
                     $newPos = Vectors::add(
                         $newPos, // current position
@@ -58,10 +60,9 @@ class Game
                     );
                     $travelDistance = 0;
                 }
-                $pathStep++;
             }
             $enemy["position"] = $newPos;
-            array_splice($enemy['path'], 0, $pathStep - 1);
+            array_splice($enemy['path'], 0, $pathStep);
             GameService::fillEnemyPath($this->board, $enemy);
             $this->enemies[$index] = $enemy;
         }

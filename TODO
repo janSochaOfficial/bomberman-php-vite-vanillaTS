@@ -3,8 +3,8 @@ DONE - 0.5p - stworzenie struktury danych z palyfielem i balonami (serwer)
 DONE - 1p - "naryswanie" playfielda w oparciu o dane z serwera (klient)
 DONE - 1p - zanimowanie balonów stojących w miejscu (klient)
 DONE //add more if time - 0.5p - "wprowadzenie" w ruch balonów po stronie serwera (co określony interwał np. 1s - nie zapychamy łącza)
-TODO - 1p - "wprowadzenie" w ruch balonów po stronie klientów (płynny ruch jak w grze)
-TODO - 1p - synchronizacja z serwerem + ewentualna korekta u klienta przy dużych błędach/rozjazdach
+DONE - 1p - "wprowadzenie" w ruch balonów po stronie klientów (płynny ruch jak w grze)
+DONE - 1p - synchronizacja z serwerem + ewentualna korekta u klienta przy dużych błędach/rozjazdach
 DONE - 1p - ruch playera po stronie klienta (zwróć uwagę na skręcanie w grze - nie celujemy kod koryguje playera)
 DONE - 1p - animacja playerów u wszystkich klientów ("przepchanie przez serwer" - tu bez interwału)
 TODO - 1p - powerUp "siła ognia" (losuj po zbiciu ścianki - szansa x% wypadniecia itema) wraz z wybuchem (animacja) - u wszystkich się pojawia

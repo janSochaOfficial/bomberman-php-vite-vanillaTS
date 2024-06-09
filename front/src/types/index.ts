@@ -2,4 +2,6 @@ export * from "./game_data";
 export * from "./game_sprite";
 export * from "./player_data";
 export * from "./position";
+export * from './collision_data';
 export * from './enemy_data';
+export * from './speeds_data';

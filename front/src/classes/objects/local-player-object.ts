@@ -63,7 +63,7 @@ export class LocalPlayerObject extends PlayerObject {
     }
 
     const newPosition = add_position(this.position, speed);
-    const { distance_min, snap_max_distance, snap_shift } =
+    const { distance_min, snap_max_distance } =
       ConstsHelper.collision_data!;
     let collisionDetected = false;
 
