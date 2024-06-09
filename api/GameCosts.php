@@ -21,8 +21,9 @@ class GameConsts
             "y" => 1
         ],
         "bomb_strength" => 1,
-        "state" => "walking",
-        "facing" => "right"
+        "state" => "standing",
+        "facing" => "right",
+        "animation_timer" => 0
     ];
 
     public static array $enemy_base_object = [
@@ -42,7 +43,7 @@ class GameConsts
     ];
 
     public static array $speeds = [
-        "player" => 2,
+        "player" => 4,
         "bloon" => 1
     ];
 

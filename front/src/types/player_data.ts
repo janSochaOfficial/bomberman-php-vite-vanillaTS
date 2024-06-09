@@ -8,4 +8,5 @@ export type player_data_type = {
     socket_ip: string;
     state: player_state;
     facing: player_facing;
+    animation_timer: number;
 }

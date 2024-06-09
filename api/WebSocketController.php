@@ -31,7 +31,7 @@ class WebSocketController
   {
     switch ($message['action']) {
       case "position":
-        $this->game->updatePlayerPosition($ip, $message['data']['position']);
+        $this->game->updatePlayerPosition($ip, $message['data']);
     }
 
     return false;

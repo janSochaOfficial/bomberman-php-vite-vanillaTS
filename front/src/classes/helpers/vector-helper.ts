@@ -27,4 +27,8 @@ export class VectorHelper {
   static distance(v1: position, v2: position): number {
     return this.magnitude(this.subtract(v1, v2));
   }
+
+  static normalize(v: position): position {
+    return this.multiplyBy(v, 1 / this.magnitude(v));
+  }
 }

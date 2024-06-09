@@ -1,19 +1,12 @@
-import {
-  ConstsHelper,
-  DrawHelper,
-  RequestConvertHelper,
-  WebsocketService,
-} from "..";
+import { DrawHelper, RequestConvertHelper, WebsocketService } from "..";
 import { findPlayerIndex } from "../../functions";
-import { IDrawable } from "../../interfaces";
-import { player_data_type } from "../../types";
 import { EnemyObject, LocalPlayerObject } from "../objects";
 import { PlayerObject } from "../objects/player-object";
 import { WallObject } from "../objects/wall-object";
 
 export class GameService {
   private readonly drawHelper: DrawHelper;
-  private readonly websocketService: WebsocketService; 
+  private readonly websocketService: WebsocketService;
 
   private walls: WallObject[];
   private gameInProgress: boolean;
@@ -42,7 +35,7 @@ export class GameService {
         return;
       }
       const delta = (timestamp - this.lastTick) / 1000;
-      this.tick(delta);  
+      this.tick(delta);
       this.lastTick = timestamp;
 
       if (this.gameInProgress) requestAnimationFrame(gameLoop);
@@ -93,11 +86,25 @@ export class GameService {
         },
       });
     }
-    if (!this.localPlayer){
+    if (!this.localPlayer) {
       this.localPlayer = localPlayer;
     }
     const index = findPlayerIndex(this.players, this.ip);
     this.players[index] = this.localPlayer;
     this.localPlayer.walls = this.walls;
+    this.localPlayer.updatePosition = this.updatePosition
   }
+
+  private updatePosition = () => {
+    if (!this.localPlayer) return;
+    this.websocketService.sendMessage({
+      action: "position",
+      data: {
+        position: this.localPlayer.position,
+        state: this.localPlayer.state,
+        facing: this.localPlayer.facing,
+        animation_timer: this.localPlayer.currentTimer,
+      },
+    });
+  };
 }

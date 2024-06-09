@@ -69,10 +69,13 @@ class Game
 
     }
 
-    public function updatePlayerPosition(string $playerIp, array $position)
+    public function updatePlayerPosition(string $playerIp, array $data)
     {
         $index = $this->findPlayerIndex($playerIp);
-        $this->players[$index]['position'] = $position;
+        $this->players[$index]['position'] = $data['position'];
+        $this->players[$index]['state'] = $data['state'];
+        $this->players[$index]['facing'] = $data['facing'];
+        $this->players[$index]['animation_timer'] = $data['animation_timer'];
     }
 
     private function findPlayerIndex(string $playerIp)
