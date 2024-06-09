@@ -1,6 +1,5 @@
-import { findPlayerIndex } from "../../functions";
-import { player_data_type } from "../../types";
-import { LocalPlayerObject } from "../objects";
+import { enemy_data, player_data_type } from "../../types";
+import { EnemyObject, LocalPlayerObject } from "../objects";
 import { PlayerObject } from "../objects/player-object";
 import { WallObject } from "../objects/wall-object";
 import { ConstsHelper } from "./consts-helper";
@@ -26,7 +25,7 @@ export class RequestConvertHelper {
   public static Players(players: player_data_type[], ip: string) {
     let localPlayer;
     const playersMapped = players.map(
-      (player_data: player_data_type, index) => {
+      (player_data: player_data_type) => {
         if (player_data.socket_ip === ip) {
           localPlayer = new LocalPlayerObject(player_data);
           return localPlayer;
@@ -39,5 +38,11 @@ export class RequestConvertHelper {
       players: playersMapped,
       localPlayer,
     };
+  }
+
+  public static Enemies(enemies: enemy_data[]) {
+    return enemies.map((enemy_data: enemy_data) => {
+      return new EnemyObject(enemy_data);
+    });
   }
 }

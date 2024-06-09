@@ -65,7 +65,6 @@ export class LocalPlayerObject extends PlayerObject {
     const newPosition = add_position(this.position, speed);
     const { distance_min, snap_max_distance, snap_shift } =
       ConstsHelper.collision_data!;
-
     let collisionDetected = false;
 
     if (this.walls) {
@@ -89,7 +88,6 @@ export class LocalPlayerObject extends PlayerObject {
             y: collisionVector.y / magnitude,
           };
           if (Math.abs(newPosition.x - wall.position.x) > (distance_min - snap_max_distance) / 2){
-            console.log("dst1", newPosition);
             
             // Push the player away from the wall
             newPosition.x +=

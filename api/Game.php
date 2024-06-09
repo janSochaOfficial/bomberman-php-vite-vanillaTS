@@ -2,6 +2,7 @@
 
 require_once ("./GameCosts.php");
 require_once ("./GameService.php");
+require_once ("./Vectors.php");
 
 class Game
 {
@@ -12,8 +13,8 @@ class Game
     public function __construct()
     {
         $this->board = GameService::generateGameBoard();
+        $this->enemies = GameService::generateEnemies($this->board);
         $this->players = [];
-        $this->enemies = [];
     }
     public function addPlayer(string $playerIp)
     {
@@ -28,13 +29,47 @@ class Game
         array_splice($this->players, $playerIndex, 1);
     }
 
-    public function tick() {
-        foreach ($this->players as $index => $associativeArray){
-            // $this->players[$index]['position']['x'] = $associativeArray['position']['x']+2;
+    public function tick(float $delta)
+    {
+        // foreach ($this->players as $index => $associativeArray) {
+
+        // }
+        foreach ($this->enemies as $index => $enemy) {
+            $speed = 1;
+            if ($enemy["type"] === "bloon") {
+                $speed = GameConsts::$speeds['bloon'];
+            }
+            $travelDistance = $delta * $speed;
+            $newPos = $enemy["position"];
+            $pathStep = 1;
+            while ($travelDistance > 0) {
+                if (!isset($enemy['path'][$pathStep])) break;
+                $distance = Vectors::distance($newPos, $enemy['path'][$pathStep]);
+                if ($travelDistance > $distance) {
+                    $travelDistance -= $distance;
+                    $newPos = $enemy['path'][$pathStep];
+                } else {
+                    $newPos = Vectors::add(
+                        $newPos, // current position
+                        Vectors::multiplyBy(
+                            Vectors::subtract($enemy['path'][$pathStep], $newPos), // Vector from current to next point
+                            $travelDistance / $distance // franction of distance to travel
+                        )
+                    );
+                    $travelDistance = 0;
+                }
+                $pathStep++;
+            }
+            $enemy["position"] = $newPos;
+            array_splice($enemy['path'], 0, $pathStep - 1);
+            GameService::fillEnemyPath($this->board, $enemy);
+            $this->enemies[$index] = $enemy;
         }
+
     }
 
-    public function updatePlayerPosition(string $playerIp, array $position) {
+    public function updatePlayerPosition(string $playerIp, array $position)
+    {
         $index = $this->findPlayerIndex($playerIp);
         $this->players[$index]['position'] = $position;
     }

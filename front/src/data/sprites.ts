@@ -8,7 +8,7 @@ export enum sprite_names {
   player_down,
   player_up,
   player_right,
-  player_left,
+  player_left
 }
 
 export enum sprite_anim {
@@ -16,6 +16,9 @@ export enum sprite_anim {
   player_right,
   player_up,
   player_down,
+  bloon_left,
+  bloon_right,
+  bloon_die
 }
 
 export type sprites_type = {
@@ -61,6 +64,25 @@ export const animations: sprite_anim_type = {
     { x: 4, y: 1 },
     { x: 3, y: 1 },
   ],
+  [sprite_anim.bloon_right]: [
+    { x: 1, y: 15 },
+    { x: 2, y: 15 },
+    { x: 1, y: 15 },
+    { x: 0, y: 15 },
+  ],
+  [sprite_anim.bloon_left]: [
+    { x: 4, y: 15 },
+    { x: 3, y: 15 },
+    { x: 4, y: 15 },
+    { x: 5, y: 15 },
+  ],
+  [sprite_anim.bloon_die]: [
+    { x: 6, y: 15 },
+    { x: 7, y: 15 },
+    { x: 8, y: 15 },
+    { x: 9, y: 15 },
+    { x: 10, y: 15 },
+  ]
 };
 
 export let areSpritesReady = false;

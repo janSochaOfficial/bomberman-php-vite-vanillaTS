@@ -6,15 +6,17 @@ class WebSocketController
 {
 
   public Game $game;
+  private float $lastTick;
 
   public function __construct()
   {
     $this->game = new Game();
+    $this->lastTick = microtime(true);
   }
 
   public function user_connect(string $ip): array
   {
-    $this->game->addPlayer($ip);
+    $this->game->addPlayer($ip); 
     $data = [
       "action" => "connect",
       "data" => [
@@ -37,11 +39,14 @@ class WebSocketController
 
   public function tick(): array
   {
-    $this->game->tick();
+    $delta = microtime(true) - $this->lastTick;
+    $this->game->tick($delta);
+    $this->lastTick = microtime(true);
     return [
       "action" => "tick",
       "data" => [
         "players" => $this->game->players,
+        "enemies" => $this->game->enemies,
       ]
     ];
   }

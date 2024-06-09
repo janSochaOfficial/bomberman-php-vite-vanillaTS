@@ -5,14 +5,15 @@ import {
   WebsocketService,
 } from "..";
 import { findPlayerIndex } from "../../functions";
+import { IDrawable } from "../../interfaces";
 import { player_data_type } from "../../types";
-import { LocalPlayerObject } from "../objects";
+import { EnemyObject, LocalPlayerObject } from "../objects";
 import { PlayerObject } from "../objects/player-object";
 import { WallObject } from "../objects/wall-object";
 
 export class GameService {
   private readonly drawHelper: DrawHelper;
-  private readonly websocketService: WebsocketService;
+  private readonly websocketService: WebsocketService; 
 
   private walls: WallObject[];
   private gameInProgress: boolean;
@@ -20,11 +21,14 @@ export class GameService {
   private players: PlayerObject[];
   private ip: string = "-1";
   private localPlayer?: LocalPlayerObject;
+  private enemies: EnemyObject[];
+  // private toDraw: IDrawable[] = [];
   constructor(drawHelper: DrawHelper) {
     this.drawHelper = drawHelper;
     this.websocketService = new WebsocketService(this.onServerMessage);
     this.walls = [];
     this.players = [];
+    this.enemies = [];
     this.gameInProgress = false;
     this.startGame();
   }
@@ -38,7 +42,7 @@ export class GameService {
         return;
       }
       const delta = (timestamp - this.lastTick) / 1000;
-      this.tick(delta);
+      this.tick(delta);  
       this.lastTick = timestamp;
 
       if (this.gameInProgress) requestAnimationFrame(gameLoop);
@@ -50,6 +54,7 @@ export class GameService {
   private tick(delta: number) {
     this.drawHelper.prepareBoard();
     this.walls.forEach((wall) => wall.draw(this.drawHelper, delta));
+    this.enemies.forEach((enemy) => enemy.draw(this.drawHelper, delta));
     this.players.forEach((player) => player.draw(this.drawHelper, delta));
     // if (this.localPlayer) this.localPlayer.position.x += 1 * delta;
   }
@@ -68,7 +73,7 @@ export class GameService {
         );
         this.players = players;
         if (localPlayer) this.changeLocalPLayer(localPlayer);
-        // console.log(this.players[id] === localPlayer);
+        this.enemies = RequestConvertHelper.Enemies(data.data.enemies);
         break;
     }
   };
