@@ -1,6 +1,6 @@
 <?php
 require_once ("./Vectors.php");
-require_once ("./GameCosts.php");
+require_once ("./GameConsts.php");
 
 function getRandomElementAndRemove(array $array): ?array
 {
@@ -94,13 +94,13 @@ class GameService
             $randomElement = getRandomElementAndRemove($possiblePositions);
             $enemy = GameConsts::$enemy_base_object;
             $enemy['position'] = $randomElement;
-            self::fillEnemyPath($board, $enemy);
+            self::fillEnemyPath($enemy, $board);
             array_push($enemies, $enemy);
         }
         return $enemies;
     }
 
-    public static function fillEnemyPath(array $board, array &$enemy)
+    public static function fillEnemyPath(array &$enemy, array &$board)
     {
         if (self::isEnemySurrounded($board, $enemy))
             return;
@@ -129,11 +129,34 @@ class GameService
         $enemy['path'] = $enemyPath;
     }
 
+    public static function fillBombFire(array &$bomb, array &$board): array
+    {
+        $bombPosition = $bomb['position'];
+        $broken_walls = [];
+        $bomb['fire_tiles'] = [$bombPosition];
+        foreach (self::$directions as $direction) {
+            $speed = self::$facing_to_vector[$direction];
+            for ($i = 1; $i <= $bomb['strength']; $i++) {
+                $firePosition = Vectors::add($bombPosition, Vectors::multiplyBy($speed, $i));
+                $firePositionBoardObject = $board[$firePosition['y']][$firePosition['x']]['object'];
+                if ($firePositionBoardObject === "wall_br") {
+                    $board[$firePosition['y']][$firePosition['x']]['object'] = "";
+                    array_push($broken_walls, $firePosition);
+                    break;
+                }
+                if ($firePositionBoardObject === "wall" || $firePositionBoardObject === "bomb") {
+                    break;
+                }
+                array_push($bomb['fire_tiles'], $firePosition);
+            }
+        }
+        return $broken_walls;
+    }
+
     private static function isEnemySurrounded($board, $enemy)
     {
         $enemyPosition = $enemy['position'];
-        $directions = ["up", "down", "right", "left"];
-        foreach ($directions as $direction) {
+        foreach (self::$directions as $direction) {
             $speed = self::$facing_to_vector[$direction];
             $newPos = Vectors::add($enemyPosition, $speed);
             if ($board[$newPos['y']][$newPos['x']]['object'] === "") {
@@ -143,7 +166,7 @@ class GameService
         return true;
     }
 
-
+    private static array $directions = ["up", "down", "left", "right"];
     private static array $facing_to_vector = [
         "up" => ["x" => 0, "y" => -1],
         "down" => ["x" => 0, "y" => 1],

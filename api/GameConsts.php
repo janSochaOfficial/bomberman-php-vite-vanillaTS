@@ -11,30 +11,10 @@ class GameConsts
         "backgroundColor" => "#388700",
         "wallsToDraw" => 40,
         "enemies" => 10,
-        "path_steps_ahead" => 2
+        "path_steps_ahead" => 2,
+        "bomb_fire_timer" => 2,
     );
 
-    public static array $player_base_object = [
-        "socket_ip" => -1,
-        "position" => [
-            "x" => 1,
-            "y" => 1
-        ],
-        "bomb_strength" => 1,
-        "state" => "standing",
-        "facing" => "right",
-        "animation_timer" => 0
-    ];
-
-    public static array $enemy_base_object = [
-        "type" => "bloon",
-        "position" => [
-            "x" => 1,
-            "y" => 1
-        ],
-        "facing" => "right",
-        "path" => []
-    ];
 
     public static array $collision = [
         "distance_min" => 1,
@@ -63,4 +43,36 @@ class GameConsts
         }
     }
 
+    public static array $player_base_object = [
+        "socket_ip" => -1,
+        "position" => [
+            "x" => 1,
+            "y" => 1
+        ],
+        "bomb_strength" => 1,
+        "state" => "standing",
+        "facing" => "right",
+        "animation_timer" => 0
+    ];
+
+    public static array $enemy_base_object = [
+        "type" => "bloon",
+        "position" => [
+            "x" => 1,
+            "y" => 1
+        ],
+        "facing" => "right",
+        "path" => []
+    ];
+    public static array $bomb_base_object = [
+        "player" => "",
+        "position" => [
+            "x" => 1,
+            "y" => 1
+        ],
+        "strength" => 1,
+        "timer" => 3,
+        "state" => "planted",
+        "fire_tiles" => []
+    ];
 }

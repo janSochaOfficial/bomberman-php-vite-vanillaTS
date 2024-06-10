@@ -62,7 +62,7 @@ while (true) {
            continue; 
         }
 
-        echo "\nReceived a Message from $ip:\n\"$unmasked\" \n";
+        // echo "\nReceived a Message from $ip:\n\"$unmasked\" \n";
         try {
             $userMessage = json_decode($unmasked, true);
             $response = $controller->user_message($ip, $userMessage);

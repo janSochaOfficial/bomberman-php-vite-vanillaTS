@@ -5,4 +5,5 @@ export type game_data = {
   canvasScale: number;
   backgroundColor: string;
   wallsToDraw: number;
+  bomb_fire_timer: number;
 };

@@ -1,6 +1,7 @@
-import { enemy_data, player_data_type } from "../../types";
-import { EnemyObject, LocalPlayerObject } from "../objects";
+import { bomb_data, enemy_data, player_data_type, power_up_data } from "../../types";
+import { BombObject, EnemyObject, LocalPlayerObject } from "../objects";
 import { PlayerObject } from "../objects/player-object";
+import { PowerUpObject } from "../objects/power-up-object";
 import { WallObject } from "../objects/wall-object";
 import { ConstsHelper } from "./consts-helper";
 
@@ -45,4 +46,17 @@ export class RequestConvertHelper {
       return new EnemyObject(enemy_data);
     });
   }
+
+  public static Bombs(bombs: bomb_data[]) {
+    return bombs.map((bomb_data: bomb_data) => {
+      return new BombObject(bomb_data);
+    });
+  }
+
+  public static PowerUps(powerUps: power_up_data[]) {
+    return powerUps.map((powerUp_data: power_up_data) => {
+      return new PowerUpObject(powerUp_data);
+    });
+  }
+  
 }

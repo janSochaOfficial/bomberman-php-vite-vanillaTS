@@ -4,7 +4,7 @@ header("Access-Control-Allow-Headers: *");
 // header("Access-Control-Allow-Credentials: true");
 header("Content-Type: Application/json");
 
-require_once("./GameCosts.php");
+require_once("./GameConsts.php");
 
 if (!isset($_GET['const'])) {
     echo json_encode(["error" => "No constant specified"]);

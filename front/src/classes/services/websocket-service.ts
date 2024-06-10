@@ -26,7 +26,6 @@ export class WebsocketService {
           console.error("Invalid data: ", data);
       } catch (error) {
         console.error(error);
-        //console.log(ev.data);
       }
   }
 

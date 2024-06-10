@@ -1,14 +1,11 @@
-import { add_position } from "../../functions/add-positions";
-import { calculateDistance } from "../../functions/calculate_distance";
 import { player_data_type, position } from "../../types";
 import { ConstsHelper, DrawHelper } from "../helpers";
 import { PlayerObject } from "./player-object";
-import { WallObject } from "./wall-object";
-
 
 export class LocalPlayerObject extends PlayerObject {
   public pressedKeys: Set<string> = new Set();
   public updatePosition?: () => void;
+  public placeBomb?: () => void;
   constructor(player_data: player_data_type) {
     super(player_data);
     window.addEventListener("keydown", this.handleKeyDown);
@@ -17,6 +14,10 @@ export class LocalPlayerObject extends PlayerObject {
 
   private handleKeyDown = (event: KeyboardEvent) => {
     this.pressedKeys.add(event.key);
+    if (event.key === " ") {
+      this.placeBomb?.();
+      return;
+    }
     if (this.pressedKeys.has("a") || this.pressedKeys.has("ArrowLeft")) {
       this.facing = "left";
     }

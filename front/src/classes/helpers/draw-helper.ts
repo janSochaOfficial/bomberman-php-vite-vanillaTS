@@ -85,8 +85,6 @@ export class DrawHelper {
       sheetPostion: animations[anim][currentFrame],
       canvasPosition: pos,
     });
-
-    // console.log(currentFrame);
   }
 
   prepareBoard() {

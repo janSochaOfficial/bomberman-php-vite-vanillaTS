@@ -1,6 +1,6 @@
 <?php
 
-require_once("./Game.php");
+require_once ("./Game.php");
 
 class WebSocketController
 {
@@ -16,7 +16,7 @@ class WebSocketController
 
   public function user_connect(string $ip): array
   {
-    $this->game->addPlayer($ip); 
+    $this->game->addPlayer($ip);
     $data = [
       "action" => "connect",
       "data" => [
@@ -27,11 +27,15 @@ class WebSocketController
     return $data;
   }
 
-  public function user_message(string $ip, array $message): array | false
+  public function user_message(string $ip, array $message): array|false
   {
     switch ($message['action']) {
       case "position":
         $this->game->updatePlayerPosition($ip, $message['data']);
+        break;
+      case "bomb":
+        $this->game->playerPlaceBomb($ip, $message['data']);
+        break;
     }
 
     return false;
@@ -47,6 +51,9 @@ class WebSocketController
       "data" => [
         "players" => $this->game->players,
         "enemies" => $this->game->enemies,
+        "bombs" => $this->game->bombs,
+        "broken_walls" => $this->game->broken_walls,
+        "power_ups" => $this->game->power_ups,
       ]
     ];
   }

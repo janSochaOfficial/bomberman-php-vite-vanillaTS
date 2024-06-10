@@ -9,6 +9,7 @@ import {
   position,
 } from "../../types";
 import { ConstsHelper, DrawHelper, VectorHelper } from "../helpers";
+import { BombObject } from "./bomb-object";
 import { WallObject } from "./wall-object";
 
 const facing_anim: { [key in player_facing]: sprite_anim } = {
@@ -32,6 +33,7 @@ export class PlayerObject implements IDrawable {
   public facing: player_facing;
   public state: player_state;
   public walls?: WallObject[];
+  public bombs?: BombObject[];
 
   constructor(player_data: player_data_type) {
     this.position = player_data.position;
@@ -82,42 +84,51 @@ export class PlayerObject implements IDrawable {
     const { distance_min, snap_max_distance } = ConstsHelper.collision_data!;
     let collisionDetected = false;
 
-    if (this.walls) {
-      for (const wall of this.walls) {
-        let distance = VectorHelper.distance(wall.position, newPosition);
+    const obstacles: { position: position }[] = [];
+    if (this.walls) obstacles.push(...this.walls);
+    if (this.bombs)
+      obstacles.push(
+        ...this.bombs.filter(
+          (bomb: BombObject) =>
+            VectorHelper.distance(this.position, bomb.position) > 0.8 &&
+            bomb.state === "planted"
+        )
+      );
 
-        if (distance < distance_min) {
-          // chceck if player is near the edge using max_snap_distnce
-          collisionDetected = true;
-          const collisionVector = VectorHelper.subtract(
-            newPosition,
-            wall.position
-          );
+    for (const obstacle of obstacles) {
+      let distance = VectorHelper.distance(obstacle.position, newPosition);
 
-          // Normalize the collision vector
-          const normalizedCollisionVector =
-            VectorHelper.normalize(collisionVector);
-          if (
-            Math.abs(newPosition.x - wall.position.x) >
-            (distance_min - snap_max_distance) / 2
-          ) {
-            // Push the player away from the wall
-            newPosition.x +=
-              normalizedCollisionVector.x * (distance_min - distance);
-            collisionDetected = false;
-          }
-          if (
-            Math.abs(newPosition.y - wall.position.y) >
-            (distance_min - snap_max_distance) / 2
-          ) {
-            newPosition.y +=
-              normalizedCollisionVector.y * (distance_min - distance);
-            collisionDetected = false;
-          }
+      if (distance < distance_min) {
+        // chceck if player is near the edge using max_snap_distnce
+        collisionDetected = true;
+        const collisionVector = VectorHelper.subtract(
+          newPosition,
+          obstacle.position
+        );
+
+        // Normalize the collision vector
+        const normalizedCollisionVector =
+          VectorHelper.normalize(collisionVector);
+        if (
+          Math.abs(newPosition.x - obstacle.position.x) >
+          (distance_min - snap_max_distance) / 2
+        ) {
+          // Push the player away from the wall
+          newPosition.x +=
+            normalizedCollisionVector.x * (distance_min - distance);
+          collisionDetected = false;
         }
-
-        // distance = calculateDistance(wall.position, newPosition);
+        if (
+          Math.abs(newPosition.y - obstacle.position.y) >
+          (distance_min - snap_max_distance) / 2
+        ) {
+          newPosition.y +=
+            normalizedCollisionVector.y * (distance_min - distance);
+          collisionDetected = false;
+        }
       }
+
+      // distance = calculateDistance(wall.position, newPosition);
     }
 
     if (!collisionDetected) {
