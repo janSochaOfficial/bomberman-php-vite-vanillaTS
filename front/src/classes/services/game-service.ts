@@ -1,25 +1,30 @@
 import { DrawHelper, RequestConvertHelper, WebsocketService } from "..";
 import { findPlayerIndex } from "../../functions";
+import { IAnimation } from "../../interfaces";
 import { position } from "../../types";
 import { BombObject, EnemyObject, LocalPlayerObject } from "../objects";
 import { PlayerObject } from "../objects/player-object";
 import { WallObject } from "../objects/wall-object";
 import { PowerUpObject } from "./../objects/power-up-object";
+import { VectorHelper } from './../helpers/vector-helper';
 
 export class GameService {
   private readonly drawHelper: DrawHelper;
   private readonly websocketService: WebsocketService;
 
-  private walls: WallObject[];
+  public walls: WallObject[];
+  public players: PlayerObject[];
+  public bombs: BombObject[] = [];
+  public powerUps: PowerUpObject[];
+  public enemies: EnemyObject[];
+
+  public animations: IAnimation[];
+
   private gameInProgress: boolean;
   private lastTick: number = 0;
-  private players: PlayerObject[];
   private ip: string = "-1";
   private localPlayer?: LocalPlayerObject;
-  private enemies: EnemyObject[];
-  private bombs: BombObject[] = [];
-  private powerUps: PowerUpObject[];
-  // private toDraw: IDrawable[] = [];
+
   constructor(drawHelper: DrawHelper) {
     this.drawHelper = drawHelper;
     this.websocketService = new WebsocketService(this.onServerMessage);
@@ -27,6 +32,7 @@ export class GameService {
     this.players = [];
     this.enemies = [];
     this.powerUps = [];
+    this.animations = [];
     this.gameInProgress = false;
     this.startGame();
   }
@@ -57,12 +63,19 @@ export class GameService {
     this.powerUps.forEach((powerUp) => powerUp.draw(this.drawHelper, delta));
     this.enemies.forEach((enemy) => enemy.draw(this.drawHelper, delta));
     this.bombs.forEach((bomb) => bomb.draw(this.drawHelper, delta));
-    
+
     this.players.forEach((player) => {
-      player.walls = this.walls;
-      player.bombs = this.bombs;
+      player.game = this;
       player.draw(this.drawHelper, delta);
     });
+
+    this.animations.forEach((animation) => {
+      animation.draw(this.drawHelper, delta);
+    });
+
+    this.animations = this.animations.filter(
+      (animation) => !animation.isDone()
+    );
   }
 
   private onServerMessage = (data: any) => {
@@ -89,24 +102,25 @@ export class GameService {
     this.bombs = RequestConvertHelper.Bombs(data.bombs);
     this.powerUps = RequestConvertHelper.PowerUps(data.power_ups);
     this.handleWallsBroken(data.broken_walls);
+    this.handlePlayersDied(data.players_died);
+    this.hanleEnemiesDied(data.enemies_died);
   }
 
   private changeLocalPLayer(localPlayer: LocalPlayerObject) {
     if (
       this.localPlayer &&
-      (this.localPlayer.position.x !== localPlayer.position.x ||
-        this.localPlayer.position.y !== localPlayer.position.y)
+      (VectorHelper.distance(localPlayer.position, this.localPlayer.position) > 0.1)
     ) {
-      this.updatePosition();
+      // this.updatePosition();
     }
     if (!this.localPlayer) {
       this.localPlayer = localPlayer;
+      this.localPlayer.game = this;
       this.localPlayer.updatePosition = this.updatePosition;
       this.localPlayer.placeBomb = this.placeBomb;
     }
     const index = findPlayerIndex(this.players, this.ip);
     this.players[index] = this.localPlayer;
-    this.localPlayer.walls = this.walls;
   }
 
   private updatePosition = () => {
@@ -146,6 +160,24 @@ export class GameService {
         )
       )
         wall.broken = true;
+    });
+  }
+  private handlePlayersDied(indexes: number[]) {
+    if (!indexes.length) return;
+    indexes.forEach((index) => {
+      this.players[index].die();
+      this.animations.push(this.players[index]);
+      this.animations.splice(index, 1);
+    });
+  }
+
+  private hanleEnemiesDied(indexes: number[]) {
+    if (!indexes.length) return;
+    indexes.forEach((index) => {
+      this.enemies[index].die();
+      this.animations.push(this.enemies[index]);
+      console.log(this.enemies[index]);
+      this.animations.splice(index, 1);
     });
   }
 }

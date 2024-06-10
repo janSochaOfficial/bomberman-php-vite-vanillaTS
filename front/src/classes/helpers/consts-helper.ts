@@ -7,7 +7,16 @@ export class ConstsHelper {
   static game_data?: game_data;
   static collision_data?: collision_data; 
   static speeds_data?: speeds_data
-
+  static readonly animation_data = {
+    durations: {
+      wall_break: 1,
+      player_die: 3,
+      enemy_die: 2,
+    },
+    timings: {
+      player_move: 0.8
+    }
+  }
   constructor() {
     // this.initValues();
   }
@@ -23,7 +32,6 @@ export class ConstsHelper {
       const: "game.speeds",
     });
 
-    
     this.valuesReady = true;
   }
 }

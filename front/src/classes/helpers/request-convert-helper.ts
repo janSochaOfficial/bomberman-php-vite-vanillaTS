@@ -57,6 +57,5 @@ export class RequestConvertHelper {
     return powerUps.map((powerUp_data: power_up_data) => {
       return new PowerUpObject(powerUp_data);
     });
-  }
-  
+  }  
 }

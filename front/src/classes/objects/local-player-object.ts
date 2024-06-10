@@ -6,6 +6,8 @@ export class LocalPlayerObject extends PlayerObject {
   public pressedKeys: Set<string> = new Set();
   public updatePosition?: () => void;
   public placeBomb?: () => void;
+  protected nthFrame = 0;
+  protected static readonly SERVER_UPDATE_INETRVAL = 30;
   constructor(player_data: player_data_type) {
     super(player_data);
     window.addEventListener("keydown", this.handleKeyDown);
@@ -32,7 +34,7 @@ export class LocalPlayerObject extends PlayerObject {
     }
 
     this.state = "walking";
-    if (this.updatePosition) this.updatePosition();
+    // if (this.updatePosition) this.updatePosition();
   };
   private handleKeyUp = (event: KeyboardEvent) => {
     this.pressedKeys.delete(event.key);
@@ -50,12 +52,23 @@ export class LocalPlayerObject extends PlayerObject {
     ) {
       this.state = "standing";
     }
-    if (this.updatePosition) this.updatePosition();
+    // if (this.updatePosition) this.updatePosition();
   };
 
   public async draw(drawer: DrawHelper, delta: number): Promise<void> {
+    if (this.isDead) {
+      super.draw(drawer, delta);
+      if (this.isDone()){
+        location.reload();
+      }
+    }
     this.tick(delta);
     super.draw(drawer, delta);
+    this.nthFrame++;
+    if (this.nthFrame === LocalPlayerObject.SERVER_UPDATE_INETRVAL) {
+      this.nthFrame = 0;
+      if (this.updatePosition) this.updatePosition();
+    }
   }
   public copyFrom(localPlayer: LocalPlayerObject) {
     this.position = localPlayer.position;

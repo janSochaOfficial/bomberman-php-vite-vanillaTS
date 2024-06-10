@@ -13,7 +13,7 @@ export class WebsocketService {
   private initSocket () {
     this.socket.onmessage = this.onMessage;
     this.socket.onopen = () => {};
-    this.socket.onerror = () => {};
+    this.socket.onerror = (er) => {console.error(er)};
   }
 
   private onMessage = (event: MessageEvent) => {

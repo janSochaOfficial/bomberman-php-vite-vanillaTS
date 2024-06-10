@@ -12,7 +12,9 @@ class Game
     public array $enemies;
     public array $bombs;
     public array $broken_walls = [];
-    public array $power_ups = []; 
+    public array $power_ups = [];
+    public array $players_died = [];
+    public array $enemies_died = [];
 
     public function __construct()
     {
@@ -37,10 +39,19 @@ class Game
 
     public function tick(float $delta)
     {
-        foreach ($this->enemies as &$enemy) {
+        foreach ($this->enemies_died as $enemy_died) {
+            array_splice($this->enemies, $enemy_died, 1);
+        }
+        $this->enemies_died = [];
+        foreach ($this->enemies as $index => &$enemy) {
             EnemyHelper::handleEnemyTick($enemy, $delta);
             GameService::fillEnemyPath($enemy, $this->board);
+            if ($this->isEnemyDying($enemy)) {
+                array_push($this->enemies_died, $index);
+                echo "enemy died\n";
+            }
         }
+
         $this->broken_walls = [];
         foreach ($this->bombs as $index => &$bomb) {
             $bomb['timer'] -= $delta;
@@ -49,18 +60,31 @@ class Game
             }
         }
         $this->calculatePowerUps();
+
+        foreach ($this->players_died as $player_index) {
+            array_splice($this->players, intval($player_index), 1);
+        }
+        $this->players_died = [];
+        foreach ($this->players as $index => &$player) {
+            if ($this->isPlayerDying($player)) {
+                array_push($this->players_died, $index);
+
+            }
+        }
     }
 
     public function updatePlayerPosition(string $playerIp, array $data)
     {
         $playerIndex = $this->findPlayerIndex($playerIp);
+        if ($playerIndex === -1)
+            return;
         $this->players[$playerIndex]['position'] = $data['position'];
         $this->players[$playerIndex]['state'] = $data['state'];
         $this->players[$playerIndex]['facing'] = $data['facing'];
         $this->players[$playerIndex]['animation_timer'] = $data['animation_timer'];
 
         foreach ($this->power_ups as $i => &$power_up) {
-            if(Vectors::areIntegerEqual($power_up['position'], $data['position'])){
+            if (Vectors::areIntegerEqual($power_up['position'], $data['position'])) {
                 $this->handlePowerUpPickup($i, $playerIndex);
             }
         }
@@ -85,6 +109,7 @@ class Game
                 return $index;
             }
         }
+        return -1;
     }
 
     private function handleBombExplosion(array &$bomb, int $bombIndex)
@@ -100,27 +125,62 @@ class Game
         array_splice($this->bombs, $bombIndex, 1);
     }
 
-    private function calculatePowerUps() {
-        if (count($this->broken_walls) == 0) return;
+    private function calculatePowerUps()
+    {
+        if (count($this->broken_walls) == 0)
+            return;
         $power_ups = [];
         foreach ($this->broken_walls as $wall) {
             $random = rand(0, 100);
-            if ($random < 10){
-                $power_ups[] = [
+            if ($random < 10) {
+                array_push($power_ups, [
                     'position' => $wall,
                     'type' => 'bomb_strength'
-                ];
+                ]);
             }
-            
+
         }
         $this->power_ups = array_merge($this->power_ups, $power_ups);
     }
 
-    private function handlePowerUpPickup(int $power_up_index, int $player_index) {
+    private function handlePowerUpPickup(int $power_up_index, int $player_index)
+    {
         $power_up = $this->power_ups[$power_up_index];
         if ($power_up['type'] === 'bomb_strength') {
             $this->players[$player_index]['bomb_strength']++;
         }
         array_splice($this->power_ups, $power_up_index, 1);
+    }
+
+    private function isPlayerDying(&$player): bool
+    {
+        foreach ($this->enemies as $enemy) {
+            if (Vectors::distance($enemy['position'], $player['position']) < 0.8) {
+                return true;
+            }
+        }
+        if ($this->isPositionInFire($player['position']))
+            return true;
+        return false;
+    }
+
+    private function isEnemyDying(&$enemy): bool
+    {
+        if ($this->isPositionInFire($enemy['position']))
+            return true;
+        return false;
+    }
+
+    private function isPositionInFire(array $position): bool
+    {
+        foreach ($this->bombs as $bomb) {
+            if ($bomb['state'] === 'planted')
+                continue;
+            foreach ($bomb['fire_tiles'] as $fire) {
+                if (Vectors::areIntegerEqual($fire, $position))
+                    return true;
+            }
+        }
+        return false;
     }
 }

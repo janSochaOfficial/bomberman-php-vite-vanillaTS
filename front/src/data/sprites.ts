@@ -17,6 +17,7 @@ export enum sprite_anim {
   player_right,
   player_up,
   player_down,
+  player_die,
   bloon_left,
   bloon_right,
   bloon_die,
@@ -76,6 +77,15 @@ export const animations: sprite_anim_type = {
     { x: 5, y: 1 },
     { x: 4, y: 1 },
     { x: 3, y: 1 },
+  ],
+  [sprite_anim.player_die]: [
+    { x: 0, y: 2 },
+    { x: 1, y: 2 },
+    { x: 2, y: 2 },
+    { x: 3, y: 2 },
+    { x: 4, y: 2 },
+    { x: 5, y: 2 },
+    { x: 6, y: 2 },
   ],
   [sprite_anim.bloon_right]: [
     { x: 1, y: 15 },

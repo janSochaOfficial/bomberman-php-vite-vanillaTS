@@ -1,7 +1,5 @@
-import { sprite_anim, sprite_names } from "../../data";
-import { add_position } from "../../functions/add-positions";
-import { calculateDistance } from "../../functions/calculate_distance";
-import { IDrawable } from "../../interfaces";
+import { sprite_anim } from "../../data";
+import { IAnimation, IDrawable } from "../../interfaces";
 import {
   player_data_type,
   player_facing,
@@ -9,8 +7,8 @@ import {
   position,
 } from "../../types";
 import { ConstsHelper, DrawHelper, VectorHelper } from "../helpers";
+import { GameService } from "../services";
 import { BombObject } from "./bomb-object";
-import { WallObject } from "./wall-object";
 
 const facing_anim: { [key in player_facing]: sprite_anim } = {
   right: sprite_anim.player_right,
@@ -19,21 +17,14 @@ const facing_anim: { [key in player_facing]: sprite_anim } = {
   down: sprite_anim.player_down,
 };
 
-const facing_sprite: { [key in player_facing]: sprite_names } = {
-  right: sprite_names.player_right,
-  left: sprite_names.player_left,
-  up: sprite_names.player_up,
-  down: sprite_names.player_down,
-};
-
-export class PlayerObject implements IDrawable {
+export class PlayerObject implements IDrawable, IAnimation {
   public position: position;
   public ip: string;
   public currentTimer: number = 0;
   public facing: player_facing;
   public state: player_state;
-  public walls?: WallObject[];
-  public bombs?: BombObject[];
+  public game?: GameService;
+  public isDead: boolean = false;
 
   constructor(player_data: player_data_type) {
     this.position = player_data.position;
@@ -44,21 +35,30 @@ export class PlayerObject implements IDrawable {
   }
 
   async draw(drawer: DrawHelper, delta: number): Promise<void> {
-    // if (this.state == "standing") {
-    //   drawer.drawSprite(facing_sprite[this.facing], this.position);
-    // } else {
+    if (this.isDead) {
+      this.currentTimer += delta;
+      drawer.drawAnimFrame(
+        sprite_anim.player_die,
+        this.position,
+        true,
+        this.currentTimer,
+        ConstsHelper.animation_data.durations.player_die
+      );
+      return;
+    }
+
     if (this.state == "walking") this.currentTimer += delta;
     drawer.drawAnimFrame(
       facing_anim[this.facing],
       this.position,
       true,
       this.currentTimer,
-      0.8
+      ConstsHelper.animation_data.timings.player_move
     );
-    // }
   }
 
   protected tick(delta: number): void {
+    if (this.isDead) return;
     // speed calculation
     if (this.state === "standing") return;
     const MAX_SPEED = ConstsHelper.speeds_data!.player;
@@ -80,20 +80,30 @@ export class PlayerObject implements IDrawable {
   }
 
   protected calulateNewPosition(speed: position) {
+    if (this.isDead) return;
     const newPosition = VectorHelper.add(this.position, speed);
     const { distance_min, snap_max_distance } = ConstsHelper.collision_data!;
     let collisionDetected = false;
 
     const obstacles: { position: position }[] = [];
-    if (this.walls) obstacles.push(...this.walls);
-    if (this.bombs)
+    if (this.game?.walls) obstacles.push(...this.game.walls);
+    if (this.game?.bombs)
       obstacles.push(
-        ...this.bombs.filter(
+        ...this.game.bombs.filter(
           (bomb: BombObject) =>
             VectorHelper.distance(this.position, bomb.position) > 0.8 &&
             bomb.state === "planted"
         )
       );
+    if (this.game?.players) {
+      obstacles.push(
+        ...this.game.players.filter(
+          (player: PlayerObject) =>
+            player.ip !== this.ip &&
+            VectorHelper.distance(this.position, player.position) > 0.8
+        )
+      );
+    }
 
     for (const obstacle of obstacles) {
       let distance = VectorHelper.distance(obstacle.position, newPosition);
@@ -134,5 +144,15 @@ export class PlayerObject implements IDrawable {
     if (!collisionDetected) {
       this.position = newPosition;
     }
+  }
+
+  public die() {
+    this.isDead = true;
+    this.currentTimer = 0;
+    return this;
+  }
+
+  public isDone(): boolean {
+    return (this.isDead && this.currentTimer > ConstsHelper.animation_data.durations.player_die);    
   }
 }

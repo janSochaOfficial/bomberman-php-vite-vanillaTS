@@ -7,8 +7,8 @@ DONE - 1p - "wprowadzenie" w ruch balonów po stronie klientów (płynny ruch ja
 DONE - 1p - synchronizacja z serwerem + ewentualna korekta u klienta przy dużych błędach/rozjazdach
 DONE - 1p - ruch playera po stronie klienta (zwróć uwagę na skręcanie w grze - nie celujemy kod koryguje playera)
 DONE - 1p - animacja playerów u wszystkich klientów ("przepchanie przez serwer" - tu bez interwału)
-TODO - 1p - powerUp "siła ognia" (losuj po zbiciu ścianki - szansa x% wypadniecia itema) wraz z wybuchem (animacja) - u wszystkich się pojawia
-TODO - 1p - kolizje/śmierci wraz z animacjami
+DONE - 1p - powerUp "siła ognia" (losuj po zbiciu ścianki - szansa x% wypadniecia itema) wraz z wybuchem (animacja) - u wszystkich się pojawia
+DONE - 1p - kolizje/śmierci wraz z animacjami
 TODO - +1pdb - jeśli zrobiłeś/aś zadnie z l.XVII (PathFinding) dodaj jednego przeciwnika (czosnek(?)) z tym algorytmem
     czosnek zawsze zmierza do najbliższego gracza
 TODO - 1p - Pathfinding jak w temacie XVII

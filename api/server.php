@@ -77,7 +77,7 @@ while (true) {
     $tick_data = $controller->tick();
     brodcast_message($clients, mask(json_encode($tick_data)));
 }
-fclose($server);
+// fclose($server);
 
 function unmask($text)
 {

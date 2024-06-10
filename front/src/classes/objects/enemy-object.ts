@@ -1,23 +1,40 @@
-import { sprite_anim } from "../../data";
-import { IDrawable } from "../../interfaces";
+import { animations, sprite_anim } from "../../data";
+import { IAnimation, IDrawable } from "../../interfaces";
 import { enemy_data, position } from "../../types";
 import { ConstsHelper, DrawHelper, VectorHelper } from "../helpers";
 
 export type enemy_type = "bloon" | "ghost";
 
-export class EnemyObject implements IDrawable {
+export class EnemyObject implements IDrawable, IAnimation {
   public position: position;
   private readonly path: position[];
   public readonly enemyType: enemy_type;
   private currentTimer = 0;
+  private isDead = false;
 
   constructor(enemy_data: enemy_data) {
     this.position = enemy_data.position;
     this.enemyType = enemy_data.type;
     this.path = enemy_data.path;
   }
+  isDone(): boolean {
+    return (
+      this.isDead &&
+      this.currentTimer > ConstsHelper.animation_data.durations.enemy_die
+    );
+  }
   async draw(drawer: DrawHelper, delta: number): Promise<void> {
     this.currentTimer += delta;
+    if (this.isDead) {
+      drawer.drawAnimFrame(
+        sprite_anim.bloon_die,
+        this.position,
+        true,
+        this.currentTimer,
+        ConstsHelper.animation_data.durations.enemy_die
+      );
+      return;
+    }
     this.tick(delta);
     drawer.drawAnimFrame(
       sprite_anim.bloon_right,
@@ -55,5 +72,9 @@ export class EnemyObject implements IDrawable {
     }
     this.position = newPos;
     this.path.splice(0, pathStep);
+  }
+  die() {
+    this.currentTimer = 0;
+    this.isDead = true;
   }
 }
