@@ -11,6 +11,8 @@ export class EnemyObject implements IDrawable, IAnimation {
   public readonly enemyType: enemy_type;
   private currentTimer = 0;
   private isDead = false;
+  private facing: "right" | "left" = "right";
+
 
   constructor(enemy_data: enemy_data) {
     this.position = enemy_data.position;
@@ -37,7 +39,7 @@ export class EnemyObject implements IDrawable, IAnimation {
     }
     this.tick(delta);
     drawer.drawAnimFrame(
-      sprite_anim.bloon_right,
+      this.facing === "left" ? sprite_anim.bloon_left : sprite_anim.bloon_right,
       this.position,
       true,
       this.currentTimer,
@@ -60,6 +62,7 @@ export class EnemyObject implements IDrawable, IAnimation {
         newPos = this.path[pathStep];
         pathStep++;
       } else {
+        this.facing = newPos.x > this.path[pathStep].x ? "left" : "right";
         newPos = VectorHelper.add(
           newPos, // current position
           VectorHelper.multiplyBy(
