@@ -7,7 +7,7 @@ export class LocalPlayerObject extends PlayerObject {
   public updatePosition?: () => void;
   public placeBomb?: () => void;
   protected nthFrame = 0;
-  protected static readonly SERVER_UPDATE_INETRVAL = 30;
+  protected static readonly SERVER_UPDATE_INETRVAL = 10;
   constructor(player_data: player_data_type) {
     super(player_data);
     window.addEventListener("keydown", this.handleKeyDown);
